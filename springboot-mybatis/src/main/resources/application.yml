@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: zhengweicheng
+    url: jdbc:mysql://localhost:3306/mybatis?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+#模板文件上传路径
+upload_dir: upload/
+
+#校验文件存储路径
+check_dir: check/
+
+#校验结果下载路径
+download_dir: download/
+
+mybatis:
+  type-aliases-package: zwc.pojo
+  mapper-locations: classpath:/mybatis/*.xml
+
+logging:
+  file:
+    name: log/log.log
+  level:
+    root: info
+    wuhobin: debug
+

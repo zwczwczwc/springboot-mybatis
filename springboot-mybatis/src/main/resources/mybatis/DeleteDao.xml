@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="zwc.dao.DeleteDao">
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete
+        from mybatis.store
+        where store.file_id = #{id, jdbcType=INTEGER};
+    </delete>
+    <delete id="deleteRegular" parameterType="java.lang.Integer">
+        delete
+        from mybatis.regular
+        where regular.file_id = #{id, jdbcType=INTEGER};
+    </delete>
+
+
+</mapper>
