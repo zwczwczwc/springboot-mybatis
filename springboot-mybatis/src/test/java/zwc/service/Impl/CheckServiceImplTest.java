@@ -58,7 +58,7 @@ class CheckServiceImplTest {
 
         //如果能检测到表格
         if (itTable.hasNext()) {
-            check_table(itTable, table, liststores, listRegular);
+//            check_table(itTable, table, liststores, listRegular);
         }
         //如果检测不到表格
         else{
@@ -66,63 +66,7 @@ class CheckServiceImplTest {
         }
     }
     //检验表格
-    private void check_table(Iterator<XWPFTable> itTable, XWPFTable table, List<Store> list, List<Regular> listRegular){
-        //word中表格编号
-        int tableIndex = 0;
 
-        //按照表格顺序一一进行检查
-        while (itTable.hasNext()) {
-            XWPFTableRow row = null;
-            List<XWPFTableCell> cells = null;
-            table = itTable.next();
-
-            //检验普通单元格
-            for (int i = 0; i < list.size(); i++) {
-                //按照得到的store一一进行校验
-                Store x = list.get(i);
-                //按照表格顺序一一进行处理，处理正常的单元格
-                if(x.getTable_id() == tableIndex && x.getPara_id() == null){
-                    //对于普通单元格
-                    int Rol = x.getRol();
-                    int Col = x.getCol();
-
-                    //获取word表格对应的单元格
-                    row = table.getRow(Rol);
-
-                    //针对每一行的所有单元格
-                    cells = row.getTableCells();
-
-                    //获取单个单元格
-                    XWPFTableCell cell = cells.get(Col);
-
-                    //进行单元格检查
-                    check_table_noword(row, table, cell, x);
-                }
-            }
-
-            //检验需要进行文本检测的单元格
-            for(int i = 0; i < listRegular.size(); i++){
-                Regular r = listRegular.get(i);
-                if(r.getTable_id() == tableIndex){
-                    int Rol = r.getRol();
-                    int Col = r.getCol();
-
-                    //获取word表格对应的单元格
-                    row = table.getRow(Rol);
-
-                    //针对每一行的所有单元格
-                    cells = row.getTableCells();
-
-                    //获取单个单元格
-                    XWPFTableCell cell = cells.get(Col);
-
-                    //按照需要进行校验的单元格进行校验
-                    check_table_word(cell, r, list);
-                }
-            }
-            tableIndex++;
-        }
-    }
 
     //检验表格某单元格中存在的多段文档
     private void check_table_word(XWPFTableCell cell, Regular regular, List<Store> list) {
