@@ -3,6 +3,10 @@ package zwc.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * @author zwc
@@ -13,7 +17,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Regular {
+@ToString
+@Table(name = "regular")
+public class Regular implements Serializable {
 
     private Integer Rol;
     private Integer Col;

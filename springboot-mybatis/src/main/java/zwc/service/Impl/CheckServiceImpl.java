@@ -1,8 +1,10 @@
 package zwc.service.Impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import zwc.dao.CheckDao;
 import zwc.pojo.Regular;
@@ -21,6 +23,7 @@ import java.util.regex.Pattern;
  */
 
 @Service
+@Slf4j
 public class CheckServiceImpl implements CheckService {
 
     @Value("${check_dir}")
@@ -35,14 +38,19 @@ public class CheckServiceImpl implements CheckService {
     @Autowired
     private CheckDao checkDao;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     //查询表中的所有元组并进行检查
     @Override
     public void liststores(String filename, int id) throws IOException {
 
         //从数据库中提取出所有的数据准备进行校验
-        List<Store> liststores = checkDao.liststores(id);
+        List<Store> liststores = listStore(id);
 
-        List<Regular> listRegular = checkDao.listregulars(id);
+        List<Regular> listRegular = listRegular(id);
+
+        listRegular.forEach(System.out::println);
 
         //读取下载到data的文件
         InputStream in = new FileInputStream(checkFilePath + filename);
@@ -54,11 +62,10 @@ public class CheckServiceImpl implements CheckService {
         XWPFDocument xdoc = new XWPFDocument(in);
         //获取word文件中的表格
         Iterator<XWPFTable> itTable = xdoc.getTablesIterator();
-        XWPFTable table = null;
 
         //如果能检测到表格
         if (itTable.hasNext()) {
-            check_table(itTable, table, liststores, listRegular);
+            check_table(itTable, liststores, listRegular);
         }
         //如果检测不到表格
         else{
@@ -120,7 +127,7 @@ public class CheckServiceImpl implements CheckService {
     }
 
     //检验表格
-    private void check_table(Iterator<XWPFTable> itTable, XWPFTable table, List<Store> list, List<Regular> listRegular){
+    private void check_table(Iterator<XWPFTable> itTable, List<Store> liststore, List<Regular> listRegular){
         //word中表格编号
         int tableIndex = 0;
 
@@ -128,14 +135,14 @@ public class CheckServiceImpl implements CheckService {
         while (itTable.hasNext()) {
             XWPFTableRow row = null;
             List<XWPFTableCell> cells = null;
-            table = itTable.next();
+            XWPFTable table = itTable.next();
 
             //检验普通单元格
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < liststore.size(); i++) {
                 //按照得到的store一一进行校验
-                Store x = list.get(i);
+                Store x = liststore.get(i);
                 //按照表格顺序一一进行处理，处理正常的单元格
-                if(x.getTable_id() == tableIndex && x.getPara_id() == null){
+                if(x.getTable_id() == tableIndex && x.getPara_id() == -1){
                     //对于普通单元格
                     int Rol = x.getRol();
                     int Col = x.getCol();
@@ -156,10 +163,10 @@ public class CheckServiceImpl implements CheckService {
 
             //检验需要进行文本检测的单元格
             for(int i = 0; i < listRegular.size(); i++){
-                Regular r = listRegular.get(i);
-                if(r.getTable_id() == tableIndex){
-                    int Rol = r.getRol();
-                    int Col = r.getCol();
+                Regular regular = listRegular.get(i);
+                if(regular.getTable_id() == tableIndex){
+                    int Rol = regular.getRol();
+                    int Col = regular.getCol();
 
                     //获取word表格对应的单元格
                     row = table.getRow(Rol);
@@ -171,7 +178,7 @@ public class CheckServiceImpl implements CheckService {
                     XWPFTableCell cell = cells.get(Col);
 
                     //按照需要进行校验的单元格进行校验
-                    check_table_word(cell, r, list);
+                    check_table_word(cell, regular, liststore);
                 }
             }
             tableIndex++;
@@ -399,5 +406,49 @@ public class CheckServiceImpl implements CheckService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private List<Store> listStore(int id){
+        List listStore = redisTemplate.opsForList().range("Store" + id, 0, -1);
+        //使用双重校验锁从redis中提取数据
+        if(listStore == null){
+            synchronized (this.getClass()){
+                log.debug("-----从Redis中查询数据-----");
+                listStore = redisTemplate.opsForList().range("Store" + id, 0, -1);
+                if(listStore == null){
+                    log.debug("-----从数据库中提取数据-----");
+                    listStore = checkDao.liststores(id);
+                    for(int i = 0; i < listStore.size(); i++){
+                        redisTemplate.opsForList().rightPush("Store" + id, listStore.get(i));
+                    }
+                }else{
+                    log.debug("-----从Redis中提取数据(同步代码块)-----");
+                    return listStore;
+                }
+            }
+        }
+        return listStore;
+    }
+
+    private List<Regular> listRegular(int id){
+        List listRegular = redisTemplate.opsForList().range("Regular" + id, 0, -1);
+        //使用双重校验锁从redis中提取数据
+        if(listRegular == null){
+            synchronized (this.getClass()){
+                log.debug("-----从Redis中查询数据-----");
+                listRegular = redisTemplate.opsForList().range("Store" + id, 0, -1);
+                if(listRegular == null){
+                    log.debug("-----从数据库中提取数据-----");
+                    listRegular = checkDao.listregulars(id);
+                    for(int i = 0; i < listRegular.size(); i++){
+                        redisTemplate.opsForList().rightPush("Store" + id, listRegular.get(i));
+                    }
+                }else{
+                    log.debug("-----从Redis中提取数据(同步代码块)-----");
+                    return listRegular;
+                }
+            }
+        }
+        return listRegular;
     }
 }

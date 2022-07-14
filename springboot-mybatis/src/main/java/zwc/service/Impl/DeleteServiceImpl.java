@@ -1,6 +1,7 @@
 package zwc.service.Impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import zwc.dao.DeleteDao;
 import zwc.service.DeleteService;
@@ -18,6 +19,9 @@ public class DeleteServiceImpl implements DeleteService {
     @Autowired
     private DeleteDao deleteDao;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     public void delete(int id) throws IOException{
         deleteDao.delete(id);
@@ -28,4 +32,17 @@ public class DeleteServiceImpl implements DeleteService {
         deleteDao.deleteRegular(id);
     }
 
+    @Override
+    public void deleteCache(int id) throws IOException {
+        if(redisTemplate.hasKey("Store" + id)){
+            redisTemplate.delete("Store" + id);
+        }
+    }
+
+    @Override
+    public void deleteCacheRegular(int id) throws IOException{
+        if(redisTemplate.hasKey("Regular" + id)){
+            redisTemplate.delete("Regular" + id);
+        }
+    }
 }

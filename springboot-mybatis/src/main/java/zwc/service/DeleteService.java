@@ -8,7 +8,11 @@ import java.io.IOException;
  * 14:00
  */
 public interface DeleteService {
-    public void delete(int id) throws IOException;
+    void delete(int id) throws IOException;
 
-    public void deleteRegular(int id) throws IOException;
+    void deleteRegular(int id) throws IOException;
+
+    void deleteCache(int id) throws  IOException;
+
+    void deleteCacheRegular(int id) throws IOException;
 }

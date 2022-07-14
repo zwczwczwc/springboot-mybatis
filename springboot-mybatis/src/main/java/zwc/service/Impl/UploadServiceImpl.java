@@ -3,6 +3,7 @@ package zwc.service.Impl;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import zwc.dao.DeleteDao;
 import zwc.dao.UploadDao;
@@ -19,6 +20,10 @@ import java.util.List;
 
 @Service
 public class UploadServiceImpl implements UploadService {
+
+    @Autowired
+    public RedisTemplate redisTemplate;
+
     @Autowired
     private UploadDao uploadDao;
 
@@ -158,6 +163,7 @@ public class UploadServiceImpl implements UploadService {
                             temp.setFile_id(id);
                             temp.setText(Str.toString());
                             temp.setTable_id(tableIndex);
+                            temp.setPara_id(-1);
                             //用于检验是否存在方框对号的情况
                             if(Str.toString().contains("☑") || Str.toString().contains("□")){
                                 temp.setRegular("☑");
@@ -165,6 +171,9 @@ public class UploadServiceImpl implements UploadService {
                             if(uploadDao.addStore(temp) < 0){
                                 //如果有一个update没有成功直接break返回错误
                                 flag = false;
+                                break;
+                            }else{
+                                redisTemplate.opsForList().rightPush("Store" + id, temp);
                             }
                         }
                     }
@@ -227,6 +236,8 @@ public class UploadServiceImpl implements UploadService {
                     if(uploadDao.addStore(temp) < 0){
                         flag = false;
                         break;
+                    }else{
+                        redisTemplate.opsForList().rightPush("Store" + id, temp);
                     }
                 }
 
@@ -269,6 +280,8 @@ public class UploadServiceImpl implements UploadService {
         temp.setFile_id(id);
         if(uploadDao.addRegular(temp) < 0){
             flag = false;
+        }else{
+            redisTemplate.opsForList().rightPush("Regular" + id,temp);
         }
         return flag;
     }
@@ -335,6 +348,8 @@ public class UploadServiceImpl implements UploadService {
                     if(uploadDao.addStore(temp) < 0){
                         flag = false;
                         break;
+                    }else{
+                        redisTemplate.opsForList().rightPush("Store" + id, temp);
                     }
                 }
 
@@ -383,6 +398,8 @@ public class UploadServiceImpl implements UploadService {
             temp.setTable_id(table_id);
             if(uploadDao.addRegular(temp) < 0){
                 flag = false;
+            }else{
+                redisTemplate.opsForList().rightPush("Regular" + id, temp);
             }
         }
         return flag;

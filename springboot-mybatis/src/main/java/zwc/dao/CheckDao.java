@@ -10,11 +10,11 @@ import java.util.List;
  */
 @Mapper
 @Repository
-public interface CheckDao {
+public interface CheckDao{
 
     //查询所有已经存储的store并返回store列表
-    public List<Store> liststores(int id);
+    List<Store> liststores(int id);
 
-    public List<Regular> listregulars(int id);
+    List<Regular> listregulars(int id);
 
 }

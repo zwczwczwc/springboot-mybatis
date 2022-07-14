@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="zwc.dao.UploadDao">
+    <insert id = "addStore" parameterType="zwc.pojo.Store">
+        insert into mybatis.store(Rol, Col, check_id, text, file_id, table_id, regular, para_id)
+        values (#{Rol},#{Col},#{check_id},#{text},#{file_id},#{table_id},#{regular},#{para_id})
+    </insert>
+
+    <insert id="addRegular" parameterType="zwc.pojo.Regular">
+        insert into mybatis.regular(Rol, Col, file_id, regular, table_id)
+        values (#{Rol},#{Col},#{file_id},#{regular},#{table_id})
+    </insert>
+</mapper>

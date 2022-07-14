@@ -65,6 +65,8 @@ public class FileController {
             //删除数据库的原规则
             deleteService.delete(id);
             deleteService.deleteRegular(id);
+            deleteService.deleteCache(id);
+            deleteService.deleteCacheRegular(id);
             result.put("sucess","模板已存在，删除旧模板完成");
         }
 

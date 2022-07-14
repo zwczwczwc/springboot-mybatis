@@ -2,8 +2,10 @@ package zwc.service.Impl;
 
 import org.apache.poi.xwpf.usermodel.*;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import zwc.dao.CheckDao;
 import zwc.pojo.Regular;
 import zwc.pojo.Store;
@@ -37,36 +39,100 @@ class CheckServiceImplTest {
     @Value("${download_dir}")
     private String downloadFilePath;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Test
     void liststores() throws IOException {
         //从数据库中提取出所有的数据准备进行校验
-        List<Store> liststores = checkDao.liststores(2);
-
-        List<Regular> listRegular = checkDao.listregulars(2);
-
-        //读取下载到data的文件
-        InputStream in = new FileInputStream(uploadFilePath + "2.docx");
-
-        //创建需要输出的TXT文档
-//        creatTxtFile("result");
-
-        @SuppressWarnings("resource")
-        XWPFDocument xdoc = new XWPFDocument(in);
-        //获取word文件中的表格
-        Iterator<XWPFTable> itTable = xdoc.getTablesIterator();
-        XWPFTable table = null;
-
-        //如果能检测到表格
-        if (itTable.hasNext()) {
-//            check_table(itTable, table, liststores, listRegular);
+        List<Store> listStore = redisTemplate.opsForList().range("Store" + 1, 0, -1);
+//        listStore.forEach(System.out::println);
+        for(Store store : listStore){
+            System.out.println(store.getPara_id());
         }
-        //如果检测不到表格
-        else{
-            check_word(liststores, listRegular, xdoc);
-        }
+
+//        List<Store> liststores = checkDao.liststores(2);
+//
+//        List<Regular> listRegular = checkDao.listregulars(2);
+//
+//        //读取下载到data的文件
+//        InputStream in = new FileInputStream(uploadFilePath + "2.docx");
+//
+//        //创建需要输出的TXT文档
+////        creatTxtFile("result");
+//
+//        @SuppressWarnings("resource")
+//        XWPFDocument xdoc = new XWPFDocument(in);
+//        //获取word文件中的表格
+//        Iterator<XWPFTable> itTable = xdoc.getTablesIterator();
+//
+//        //如果能检测到表格
+//        if (itTable.hasNext()) {
+//            check_table(itTable, liststores, listRegular);
+//        }
+//        //如果检测不到表格
+//        else{
+//            check_word(liststores, listRegular, xdoc);
+//        }
     }
     //检验表格
+    private void check_table(Iterator<XWPFTable> itTable, List<Store> list, List<Regular> listRegular){
+        //word中表格编号
+        int tableIndex = 0;
 
+        //按照表格顺序一一进行检查
+        while (itTable.hasNext()) {
+            XWPFTableRow row = null;
+            List<XWPFTableCell> cells = null;
+            XWPFTable table = itTable.next();
+
+            //检验普通单元格
+            for (int i = 0; i < list.size(); i++) {
+                //按照得到的store一一进行校验
+                Store x = list.get(i);
+                //按照表格顺序一一进行处理，处理正常的单元格
+                if(x.getTable_id() == tableIndex && x.getPara_id() == null){
+                    //对于普通单元格
+                    int Rol = x.getRol();
+                    int Col = x.getCol();
+
+                    //获取word表格对应的单元格
+                    row = table.getRow(Rol);
+
+                    //针对每一行的所有单元格
+                    cells = row.getTableCells();
+
+                    //获取单个单元格
+                    XWPFTableCell cell = cells.get(Col);
+
+                    //进行单元格检查
+                    check_table_noword(row, table, cell, x);
+                }
+            }
+
+            //检验需要进行文本检测的单元格
+            for(int i = 0; i < listRegular.size(); i++){
+                Regular r = listRegular.get(i);
+                if(r.getTable_id() == tableIndex){
+                    int Rol = r.getRol();
+                    int Col = r.getCol();
+
+                    //获取word表格对应的单元格
+                    row = table.getRow(Rol);
+
+                    //针对每一行的所有单元格
+                    cells = row.getTableCells();
+
+                    //获取单个单元格
+                    XWPFTableCell cell = cells.get(Col);
+
+                    //按照需要进行校验的单元格进行校验
+                    check_table_word(cell, r, list);
+                }
+            }
+            tableIndex++;
+        }
+    }
 
     //检验表格某单元格中存在的多段文档
     private void check_table_word(XWPFTableCell cell, Regular regular, List<Store> list) {
