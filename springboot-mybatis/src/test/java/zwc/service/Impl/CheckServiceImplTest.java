@@ -45,35 +45,36 @@ class CheckServiceImplTest {
     @Test
     void liststores() throws IOException {
         //从数据库中提取出所有的数据准备进行校验
-        List<Store> listStore = redisTemplate.opsForList().range("Store" + 1, 0, -1);
+//        List<Store> listStore = redisTemplate.opsForList().range("Store" + 1, 0, -1);
 //        listStore.forEach(System.out::println);
-        for(Store store : listStore){
-            System.out.println(store.getPara_id());
-        }
+//        for(Store store : listStore){
+//            System.out.println(store.getPara_id());
+//        }
 
 //        List<Store> liststores = checkDao.liststores(2);
 //
 //        List<Regular> listRegular = checkDao.listregulars(2);
 //
-//        //读取下载到data的文件
-//        InputStream in = new FileInputStream(uploadFilePath + "2.docx");
-//
-//        //创建需要输出的TXT文档
-////        creatTxtFile("result");
-//
-//        @SuppressWarnings("resource")
-//        XWPFDocument xdoc = new XWPFDocument(in);
-//        //获取word文件中的表格
-//        Iterator<XWPFTable> itTable = xdoc.getTablesIterator();
-//
-//        //如果能检测到表格
-//        if (itTable.hasNext()) {
+        //读取下载到data的文件
+        InputStream in = new FileInputStream(uploadFilePath + "2.docx");
+
+        //创建需要输出的TXT文档
+//        creatTxtFile("result");
+
+        @SuppressWarnings("resource")
+        XWPFDocument xdoc = new XWPFDocument(in);
+        //获取word文件中的表格
+        Iterator<XWPFTable> itTable = xdoc.getTablesIterator();
+
+        //如果能检测到表格
+        if (itTable.hasNext()) {
 //            check_table(itTable, liststores, listRegular);
-//        }
-//        //如果检测不到表格
-//        else{
+
+        }
+        //如果检测不到表格
+        else{
 //            check_word(liststores, listRegular, xdoc);
-//        }
+        }
     }
     //检验表格
     private void check_table(Iterator<XWPFTable> itTable, List<Store> list, List<Regular> listRegular){

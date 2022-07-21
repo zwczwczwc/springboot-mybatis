@@ -2,6 +2,7 @@ package zwc.service.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -50,7 +51,7 @@ public class CheckServiceImpl implements CheckService {
 
         List<Regular> listRegular = listRegular(id);
 
-        listRegular.forEach(System.out::println);
+//        listRegular.forEach(System.out::println);
 
         //读取下载到data的文件
         InputStream in = new FileInputStream(checkFilePath + filename);
@@ -270,6 +271,13 @@ public class CheckServiceImpl implements CheckService {
         //如果检查规则为指定值
         if (check_id.equals("yellow")) {
             if (!check_text.equals(Str.toString())) {
+
+                /*XWPFRun run = paras_mul.get(0).createRun();
+
+                CTShd shd = run.getCTR().addNewRPr().addNewShd();
+                shd.setFill("FF0000");
+                run.setText("存在填写内容不为指定值，需要修改");*/
+
                 writeTxtFile("第" + (Rol + 1) + "行" + "第" + (Col + 1) + "列：" + "填写值为”" + Str + "“，但指定值为”" + check_text + "“，内容不为指定值", "result");
             }
         }
@@ -278,11 +286,25 @@ public class CheckServiceImpl implements CheckService {
             //如果校验字段内包含方框对号
             if(regular != null){
                 if(!Str.toString().contains("☑")){
+
+                    /*XWPFRun run = paras_mul.get(0).createRun();
+
+                    CTShd shd = run.getCTR().addNewRPr().addNewShd();
+                    shd.setFill("FF0000");
+                    run.setText("存在需填写的内容为空，需要修改");*/
+
                     writeTxtFile("第" + Rol + "行" + "第" + Col + "列：" + "必须进行选择", "result");
                 }
             }
             //如果校验内容是纯文本
             else if(Str.toString().equals("")) {
+
+                XWPFRun run = paras_mul.get(0).createRun();
+
+                CTShd shd = run.getCTR().addNewRPr().addNewShd();
+                shd.setFill("FF0000");
+                run.setText("存在需填写的内容为空，需要修改");
+
                 writeTxtFile("第" + Rol + "行" + "第" + Col + "列：" + "内容不允许为空", "result");
             }
         }

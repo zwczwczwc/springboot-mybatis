@@ -26,14 +26,11 @@ spring:
       max-request-size: 20MB
 
 
-#模板文件上传路径
-upload_dir: upload/
-
-#校验文件存储路径
-check_dir: check/
-
-#校验结果下载路径
-download_dir: download/
+rocketmq:
+  #当用到rocketMQ时必须配置的两项
+  name-server: localhost:9876
+  producer:
+    group: file_group
 
 mybatis:
   type-aliases-package: zwc.pojo
@@ -48,3 +45,11 @@ logging:
     root: info
     wuhobin: debug
 
+#模板文件上传路径
+upload_dir: upload/
+
+#校验文件存储路径
+check_dir: check/
+
+#校验结果下载路径
+download_dir: download/

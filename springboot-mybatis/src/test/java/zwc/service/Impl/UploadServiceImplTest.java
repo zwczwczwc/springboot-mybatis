@@ -59,7 +59,8 @@ public class UploadServiceImplTest {
 
         //如果文档能检测到表格
         if(itTable.hasNext()){
-            flag = check_table(itTable, colors, 2);
+//            flag = check_table(itTable, colors, 2);
+
         }
         //如果文档检测不到表格
         else{

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import zwc.service.Producer.UploadProducer;
 import zwc.service.CheckService;
 import zwc.service.DeleteService;
 import zwc.service.UploadService;
@@ -21,6 +22,9 @@ import java.io.OutputStream;
 @RequestMapping("file")
 @Slf4j
 public class FileController {
+
+    @Autowired
+    private UploadProducer uploadProducer;
 
     @Autowired
     private CheckService checkService;
@@ -80,6 +84,9 @@ public class FileController {
         }
 
         result.put("success", "文件上传成功!");
+
+        //向消息队列发送消息
+        uploadProducer.send(String.valueOf(id));
 
         //进行上传文件的解析
         if(uploadService.addStore(id)){
