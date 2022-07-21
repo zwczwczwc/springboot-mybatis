@@ -6,6 +6,9 @@ spring:
     username: root
     password: zhengweicheng
     driver-class-name: com.mysql.jdbc.Driver
+  application:
+    #name：orderservice
+    name: orderservice
 mybatis:
   type-aliases-package: com.xn2001.user.pojo
   configuration:
@@ -15,3 +18,13 @@ logging:
     com.xn2001: debug
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:10086/eureka
+
+#可以在配置文件中配置ribbon的负载均衡规则
+#userservice:
+#  ribbon:
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.Zone # 负载均衡规则
