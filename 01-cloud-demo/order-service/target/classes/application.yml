@@ -9,6 +9,17 @@ spring:
   application:
     #name：orderservice
     name: orderservice
+  cloud:
+    #nacus配置
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        cluster-name: QD
+
+userservice:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.alibaba.cloud.nacos.ribbon.NacosRule #负载均衡规则
+
 mybatis:
   type-aliases-package: com.xn2001.user.pojo
   configuration:
@@ -19,7 +30,12 @@ logging:
   pattern:
     dateformat: MM-dd HH:mm:ss:SSS
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:10086/eureka
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://127.0.0.1:10086/eureka
+
+#可以在配置文件中配置ribbon的负载均衡规则
+#userservice:
+#  ribbon:
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.Zone # 负载均衡规则

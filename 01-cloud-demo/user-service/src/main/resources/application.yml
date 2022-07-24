@@ -6,10 +6,18 @@ spring:
     username: root
     password: zhengweicheng
     driver-class-name: com.mysql.jdbc.Driver
-#    eureka服务的名称
-  application:
-    #name：orderservice
-    name: userservice
+  #在bootstrap中已经进行加载了
+  #eureka服务的名称
+#  application:
+#    #name：orderservice
+#    name: userservice
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: localhost:8848
+#        cluster-name: SH
+
+
 mybatis:
   type-aliases-package: com.xn2001.user.pojo
   configuration:
@@ -21,7 +29,7 @@ logging:
     dateformat: MM-dd HH:mm:ss:SSS
 
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://127.0.0.1:10086/eureka
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://127.0.0.1:10086/eureka

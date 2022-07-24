@@ -159,7 +159,11 @@ public class UploadServiceImpl implements UploadService {
                             Store temp = new Store();
                             temp.setRol(i);
                             temp.setCol(j);
-                            temp.setCheck_id(color);
+                            if(color.equals("cyan")){
+                                temp.setCheck_id("notnull");
+                            }else{
+                                temp.setCheck_id("specific");
+                            }
                             temp.setFile_id(id);
                             temp.setText(Str.toString());
                             temp.setTable_id(tableIndex);
@@ -216,7 +220,7 @@ public class UploadServiceImpl implements UploadService {
                 //防止出现相同高亮的段落分为好几段，进行内容提取
                 if(xL.getCTR().getRPr().getHighlight() != null){
                     StringBuilder temp_text = new StringBuilder(xL.text());
-                    String c = xL.getCTR().getRPr().getHighlight().getVal().toString();
+                    String color = xL.getCTR().getRPr().getHighlight().getVal().toString();
                     while(j + 1 < runsLists.size()
                             && runsLists.get(j + 1).getCTR().getRPr().getHighlight() != null
                             && runsLists.get(j).getCTR().getRPr().getHighlight().getVal().equals(runsLists.get(j + 1).getCTR().getRPr().getHighlight().getVal())){
@@ -224,9 +228,13 @@ public class UploadServiceImpl implements UploadService {
                         j++;
                     }
                     Store temp = new Store();
-                    if (Arrays.asList(colors).contains(c)) {
+                    if (Arrays.asList(colors).contains(color)) {
                         temp.setFile_id(id);
-                        temp.setCheck_id(c);
+                        if(color.equals("cyan")){
+                            temp.setCheck_id("notnull");
+                        }else{
+                            temp.setCheck_id("specific");
+                        }
                         //不管是黄色还是蓝色都存储内容
                         temp.setText(temp_text.toString());
                         temp.setPara_id(num);
@@ -321,7 +329,7 @@ public class UploadServiceImpl implements UploadService {
                     f = true;
 
                     StringBuilder temp_text = new StringBuilder(xL.text());
-                    String c = xL.getCTR().getRPr().getHighlight().getVal().toString();
+                    String color = xL.getCTR().getRPr().getHighlight().getVal().toString();
                     while(j + 1 < runsLists.size()
                             && runsLists.get(j + 1).getCTR().getRPr().getHighlight() != null
                             && runsLists.get(j).getCTR().getRPr().getHighlight().getVal().equals(runsLists.get(j + 1).getCTR().getRPr().getHighlight().getVal())){
@@ -329,11 +337,15 @@ public class UploadServiceImpl implements UploadService {
                         j++;
                     }
                     Store temp = new Store();
-                    if (Arrays.asList(colors).contains(c)) {
+                    if (Arrays.asList(colors).contains(color)) {
                         temp.setRol(Rol);
                         temp.setCol(Col);
                         temp.setFile_id(id);
-                        temp.setCheck_id(c);
+                        if(color.equals("cyan")){
+                            temp.setCheck_id("notnull");
+                        }else{
+                            temp.setCheck_id("specific");
+                        }
                         //不管是黄色还是蓝色都存储内容
                         temp.setText(temp_text.toString());
                         temp.setTable_id(table_id);
