@@ -160,9 +160,9 @@ public class UploadServiceImpl implements UploadService {
                             temp.setRol(i);
                             temp.setCol(j);
                             if(color.equals("cyan")){
-                                temp.setCheck_id("notnull");
+                                temp.setCheck_id("not-null");
                             }else{
-                                temp.setCheck_id("specific");
+                                temp.setCheck_id("specific-context");
                             }
                             temp.setFile_id(id);
                             temp.setText(Str.toString());
@@ -231,9 +231,9 @@ public class UploadServiceImpl implements UploadService {
                     if (Arrays.asList(colors).contains(color)) {
                         temp.setFile_id(id);
                         if(color.equals("cyan")){
-                            temp.setCheck_id("notnull");
+                            temp.setCheck_id("not-null");
                         }else{
-                            temp.setCheck_id("specific");
+                            temp.setCheck_id("specific-context");
                         }
                         //不管是黄色还是蓝色都存储内容
                         temp.setText(temp_text.toString());
@@ -304,7 +304,7 @@ public class UploadServiceImpl implements UploadService {
         //用于将整个文本转化为一段内容
         StringBuilder x = new StringBuilder();
 
-        //保存整个纯文档的转义字符
+        //保存整个纯文档的正则表达式
         StringBuilder str = new StringBuilder();
 
         //检测到有高亮再向数据库内存储
@@ -318,33 +318,77 @@ public class UploadServiceImpl implements UploadService {
             List<XWPFRun> runsLists = paras.get(i).getRuns();//获取段落中的列表
             x.append(paras.get(i).getText());
 
+            //用来判断整个段落是否都是高亮
+            boolean ishigh = true;
             //对于段落中的每个内容
             for(int j = 0; j < runsLists.size(); j++){
 
                 XWPFRun xL = runsLists.get(j);
 
+                //只要这个段落中任意一个不是高亮，则不会有逻辑联系上的段落情况
+                if(xL.getCTR().getRPr().getHighlight() == null){
+                    ishigh = false;
+                }
+
                 //防止出现相同高亮的段落分为好几段，进行内容提取
-                if(xL.getCTR().getRPr().getHighlight() != null){
+                else{
 
                     f = true;
 
                     StringBuilder temp_text = new StringBuilder(xL.text());
                     String color = xL.getCTR().getRPr().getHighlight().getVal().toString();
-                    while(j + 1 < runsLists.size()
-                            && runsLists.get(j + 1).getCTR().getRPr().getHighlight() != null
-                            && runsLists.get(j).getCTR().getRPr().getHighlight().getVal().equals(runsLists.get(j + 1).getCTR().getRPr().getHighlight().getVal())){
-                        temp_text.append(runsLists.get(j + 1).text());
-                        j++;
+
+                    //防止多个高亮的run被分散为多个校验规则
+                    while(j + 1 < runsLists.size()){
+                        if(runsLists.get(j + 1).getCTR().getRPr().getHighlight() != null
+                                && runsLists.get(j).getCTR().getRPr().getHighlight().getVal().equals(runsLists.get(j + 1).getCTR().getRPr().getHighlight().getVal())){
+                            temp_text.append(runsLists.get(j + 1).text());
+                            j++;
+                        }
+                        else{
+                            ishigh = false;
+                            break;
+                        }
                     }
+
+                    //如果前一个段落全部都是高亮
+                    if(ishigh){
+                        while(i + 1 < paras.size() && ishigh){
+                            StringBuilder str_temp = new StringBuilder();
+                            XWPFParagraph para_temp = paras.get(i + 1);
+                            List<XWPFRun> runslist_temp = para_temp.getRuns();
+
+                            for(XWPFRun run_temp : runslist_temp){
+                                if(run_temp.getCTR().getRPr().getHighlight() != null &&
+                                        (run_temp.getCTR().getRPr().getHighlight().getVal().toString().equals(color))){
+                                    str_temp.append(run_temp.text());
+                                } else if(run_temp.text().trim().equals("")){
+                                    //如果段落之间有空格则跳过
+                                    continue;
+                                } else{
+                                    ishigh = false;
+                                    break;
+                                }
+                            }
+
+                            //如果下一段还是全部高亮，则添加到字符串中
+                            if(ishigh){
+                                temp_text.append(str_temp);
+                                i++;
+                            }
+                        }
+                    }
+
+                    //防止具有相同逻辑关系的多个段落被分散为单独的校验规则
                     Store temp = new Store();
                     if (Arrays.asList(colors).contains(color)) {
                         temp.setRol(Rol);
                         temp.setCol(Col);
                         temp.setFile_id(id);
                         if(color.equals("cyan")){
-                            temp.setCheck_id("notnull");
+                            temp.setCheck_id("not-null");
                         }else{
-                            temp.setCheck_id("specific");
+                            temp.setCheck_id("specific-context");
                         }
                         //不管是黄色还是蓝色都存储内容
                         temp.setText(temp_text.toString());
@@ -385,12 +429,10 @@ public class UploadServiceImpl implements UploadService {
                         str.append(xL.text());
                     }
                 }
-
-                //进行段落的划分，防止多个高亮段无法提取高亮位置的情况
-                if(str.charAt(str.length() - 1) != 'o'){
-                    str.append("o");
-                }
-
+            }
+            //进行段落的划分，防止出现高亮位置在最后没办法提取的情况
+            if(str.charAt(str.length() - 1) != 'o'){
+                str.append("o");
             }
                 /*//匹配段落之间的换行
                 if(str.length() < 7){

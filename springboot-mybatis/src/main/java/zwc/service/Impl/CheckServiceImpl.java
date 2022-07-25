@@ -2,7 +2,6 @@ package zwc.service.Impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -223,15 +222,19 @@ public class CheckServiceImpl implements CheckService {
             /*for(int i = 0; i < mat.groupCount(); i++){
                 System.out.println(mat.group());
             }*/
+
             for(Store store : liststores){
                 //找到每个高亮内容的匹配项
                 int num = store.getPara_id() + 1;
-                if(store.getCheck_id().equals("yellow")){
+
+                //如果检测规则是必须为指定的值
+                if(store.getCheck_id().equals("specific-context")){
                     if (!mat.group(num).equals(store.getText())) {
                         writeTxtFile("第" + (store.getRol() + 1) + "行" + "第" + (store.getCol() + 1) + "列" + "第" + (store.getPara_id() + 1) + "处" + "所填内容不为指定内容", "result");
                     }
                 }else{
-                    if(mat.group(num).equals("")){
+                    System.out.println(mat.group(num));
+                    if(mat.group(num).trim().equals("")){
 //                        System.out.println("第" + store.getRol() + "行" + "第" + store.getCol() + "列" + "第" + store.getPara_id() + "处" + "存在未填选项");
                         writeTxtFile("第" + (store.getRol() + 1) + "行" + "第" + (store.getCol() + 1) + "列" + "第" + (store.getPara_id() + 1) + "处" + "存在未填选项", "result");
                     }
@@ -269,7 +272,7 @@ public class CheckServiceImpl implements CheckService {
         }
 
         //如果检查规则为指定值
-        if (check_id.equals("yellow")) {
+        if (check_id.equals("specific-context")) {
             if (!check_text.equals(Str.toString())) {
 
                 /*XWPFRun run = paras_mul.get(0).createRun();
@@ -299,11 +302,11 @@ public class CheckServiceImpl implements CheckService {
             //如果校验内容是纯文本
             else if(Str.toString().equals("")) {
 
-                XWPFRun run = paras_mul.get(0).createRun();
+                /*XWPFRun run = paras_mul.get(0).createRun();
 
                 CTShd shd = run.getCTR().addNewRPr().addNewShd();
                 shd.setFill("FF0000");
-                run.setText("存在需填写的内容为空，需要修改");
+                run.setText("存在需填写的内容为空，需要修改");*/
 
                 writeTxtFile("第" + Rol + "行" + "第" + Col + "列：" + "内容不允许为空", "result");
             }
@@ -334,9 +337,10 @@ public class CheckServiceImpl implements CheckService {
 
 
         if(mat.matches()) {
+
             for(Store store : liststores){
                 int num = store.getPara_id() + 1;
-                if(store.getCheck_id().equals("yellow")){
+                if(store.getCheck_id().equals("specific-context")){
                     if (!mat.group(num).equals(store.getText())) {
                         writeTxtFile("第" + store.getPara_id() + "处" + "存在不为指定值的内容", "result");
                     }

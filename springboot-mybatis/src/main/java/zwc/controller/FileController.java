@@ -9,22 +9,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import zwc.service.Producer.UploadProducer;
 import zwc.service.CheckService;
 import zwc.service.DeleteService;
 import zwc.service.UploadService;
+
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 
 @Controller
 @RequestMapping("file")
 @Slf4j
 public class FileController {
 
-    @Autowired
-    private UploadProducer uploadProducer;
 
     @Autowired
     private CheckService checkService;
@@ -85,9 +81,6 @@ public class FileController {
 
         result.put("success", "文件上传成功!");
 
-        //向消息队列发送消息
-        uploadProducer.send(String.valueOf(id));
-
         //进行上传文件的解析
         if(uploadService.addStore(id)){
             result.put("sucess","文件解析成功！");
@@ -128,8 +121,25 @@ public class FileController {
         //调用service生成TXT文档
         checkService.liststores(fileName, id);
 
-        result.put("sucess","文件校验完成！可以返回下载校验文件");
+        result.put("sucess","文件校验完成!");
 
+        result.put("校验结果如下: ", txtRead(new File(downloadFilePath + "result")));
+
+        return result.toString();
+    }
+
+    public String txtRead(File file){
+        StringBuilder result = new StringBuilder();
+        try{
+            BufferedReader br = new BufferedReader(new FileReader(file));//构造一个BufferedReader类来读取文件
+            String s = null;
+            while((s = br.readLine())!=null){//使用readLine方法，一次读一行
+                result.append(System.lineSeparator()+s);
+            }
+            br.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return result.toString();
     }
 

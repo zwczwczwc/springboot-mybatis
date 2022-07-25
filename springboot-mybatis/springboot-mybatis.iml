@@ -139,28 +139,6 @@
     <orderEntry type="library" name="Maven: tk.mybatis:mapper-extra:1.1.5" level="project" />
     <orderEntry type="library" name="Maven: tk.mybatis:mapper-spring-boot-autoconfigure:2.1.5" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.66" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-client:4.8.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-common:4.8.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-remoting:4.8.0" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.59.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-logging:4.8.0" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-tcnative-boringssl-static:2.0.36.Final" level="project" />
-    <orderEntry type="library" name="Maven: commons-validator:commons-validator:1.6" level="project" />
-    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.9.2" level="project" />
-    <orderEntry type="library" name="Maven: commons-digester:commons-digester:1.8.1" level="project" />
-    <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Maven: commons-collections:commons-collections:3.2.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.11" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-spring-boot-starter:2.2.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-spring-boot:2.2.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-acl:4.8.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.rocketmq:rocketmq-srvutil:4.8.0" level="project" />
-    <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.2" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework:spring-messaging:5.3.4" level="project" />
-    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-validation:2.4.3" level="project" />
-    <orderEntry type="library" name="Maven: org.hibernate.validator:hibernate-validator:6.1.7.Final" level="project" />
-    <orderEntry type="library" name="Maven: jakarta.validation:jakarta.validation-api:2.0.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.4.1.Final" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-swagger-ui:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-spring-web:2.9.2" level="project" />
     <orderEntry type="library" name="Maven: io.springfox:springfox-swagger2:2.9.2" level="project" />
