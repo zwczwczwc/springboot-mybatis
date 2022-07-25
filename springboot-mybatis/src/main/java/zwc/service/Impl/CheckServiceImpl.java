@@ -233,7 +233,7 @@ public class CheckServiceImpl implements CheckService {
                         writeTxtFile("第" + (store.getRol() + 1) + "行" + "第" + (store.getCol() + 1) + "列" + "第" + (store.getPara_id() + 1) + "处" + "所填内容不为指定内容", "result");
                     }
                 }else{
-                    System.out.println(mat.group(num));
+//                    System.out.println(mat.group(num));
                     if(mat.group(num).trim().equals("")){
 //                        System.out.println("第" + store.getRol() + "行" + "第" + store.getCol() + "列" + "第" + store.getPara_id() + "处" + "存在未填选项");
                         writeTxtFile("第" + (store.getRol() + 1) + "行" + "第" + (store.getCol() + 1) + "列" + "第" + (store.getPara_id() + 1) + "处" + "存在未填选项", "result");
