@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import zwc.service.CheckService;
 import zwc.service.DeleteService;
+import zwc.service.ExtraCheckService;
 import zwc.service.UploadService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,9 @@ public class FileController {
 
     @Autowired
     private DeleteService deleteService;
+
+    @Autowired
+    private ExtraCheckService extraCheckService;
 
     //代表上传的是待校验文件
     @Value("${check_dir}")
@@ -120,6 +124,8 @@ public class FileController {
 
         //调用service生成TXT文档
         checkService.liststores(fileName, id);
+
+        extraCheckService.extraCheck(fileName, id);
 
         result.put("sucess","文件校验完成!");
 

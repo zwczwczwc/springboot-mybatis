@@ -25,13 +25,6 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
-
-rocketmq:
-  #当用到rocketMQ时必须配置的两项
-  name-server: localhost:9876
-  producer:
-    group: file_group
-
 mybatis:
   type-aliases-package: zwc.pojo
   mapper-locations: classpath:/mybatis/*.xml
